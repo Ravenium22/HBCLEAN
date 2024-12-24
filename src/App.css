@@ -1,0 +1,190 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+.dune-embed {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100px;
+}
+
+iframe {
+  background: transparent;
+}
+/* Add to your CSS file */
+.metric-iframe {
+  transform: scale(1.2);
+  transform-origin: 0 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide Dune watermark and unnecessary elements */
+iframe {
+  background: transparent !important;
+}
+
+/* Adjust iframe container heights */
+.metric-card {
+  min-height: 220px;
+}
+
+/* Make sure iframes don't overflow */
+.iframe-container {
+  overflow: hidden;
+  position: relative;
+}
+/* Add to your index.css or equivalent */
+.bg-secondary iframe {
+  background: transparent !important;
+}
+
+/* Hide Dune branding */
+iframe[title^="Dune"] {
+  filter: contrast(1.1) brightness(1.1);
+}
+
+/* Custom scrollbar for iframe content */
+iframe {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card hover effect */
+.bg-secondary {
+  transition: transform 0.2s ease-in-out;
+}
+
+.bg-secondary:hover {
+  transform: translateY(-2px);
+}
+/* Add to your index.css or equivalent */
+.bg-secondary iframe {
+  background: transparent !important;
+}
+
+/* Ensure consistent sizes for analysis cards */
+.analysis-card {
+  height: 100%;
+  min-height: 280px;
+}
+
+/* Make first two cards larger */
+.analysis-card.full-width {
+  grid-column: span 2;
+  height: 320px;
+}
+
+/* Hide Dune branding but keep functionality */
+iframe {
+  filter: contrast(1.05);
+}
+
+/* Remove scrollbars but keep scroll functionality */
+iframe {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fix iframe scaling */
+.iframe-container {
+  transform-origin: top left;
+  overflow: hidden;
+}
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Add Dune-specific styles below */
+.bg-secondary {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-secondary iframe {
+  background: transparent !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none;
+}
+
+/* Hide scrollbars but keep functionality */
+iframe {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* Adjust iframe containers */
+.metric-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ensure consistent card heights */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Dune visualization adjustments */
+.dune-embed {
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

@@ -1,0 +1,24 @@
+/* src/styles/fonts.css */
+@font-face {
+    font-family: 'Outfit Tokyo';
+    src: url('/fonts/outfit/Outfit-Tokyo.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/outfit/Outfit-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Outfit';
+    src: url('/fonts/outfit/Outfit-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
