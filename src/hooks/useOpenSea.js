@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import OpenSeaService from '@/services/api/OpenSeaService';
+import OpenSeaService from '@/services/OpenSeaService';
 
 const useOpenSea = (collectionSlug) => {
   const [loading, setLoading] = useState(true);
