@@ -7,10 +7,17 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      'src': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src')
     },
-    extensions: ['.js', '.jsx', '.json']
+    extensions: ['.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+  },
+  build: {
+    sourcemap: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      }
+    }
   },
   server: {
     proxy: {
