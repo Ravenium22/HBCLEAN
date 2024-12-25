@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { getCollectionStats } from '../services/opensea';
 
 const useOpenSea = (collectionSlug) => {
   const [loading, setLoading] = useState(true);
@@ -18,12 +18,10 @@ const useOpenSea = (collectionSlug) => {
       try {
         setLoading(true);
         setError(null);
-
-        // Use api directly
-        const fetched = await api.getCollectionStats(collectionSlug);
+        const fetched = await getCollectionStats(collectionSlug);
         setStats(fetched);
       } catch (err) {
-        console.error('Stats error:', err);
+        console.error('Error:', err);
         setError(err.message);
       } finally {
         setLoading(false);

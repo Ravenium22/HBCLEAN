@@ -1,8 +1,8 @@
 // src/views/Opportunities/OpportunitiesView.jsx
 import React, { useState, useEffect } from 'react';
-import NFTCard from '../../components/features/Opportunities/NFTCard.jsx';
-import api from '../lib/api';
+import NFTCard from '../../components/features/Opportunities/NFTCard';
 import { Loader2 } from 'lucide-react';
+import { getListedOpportunities } from '../../services/opensea';
 
 function OpportunitiesView() {
   const [nfts, setNfts] = useState([]);
@@ -18,12 +18,10 @@ function OpportunitiesView() {
     setError(null);
     
     try {
-      // No need to create new OpenSeaService instance
-      // Just use the imported 'api' directly
-      const opportunities = await api.getListedOpportunities();
+      const opportunities = await getListedOpportunities();
       setNfts(opportunities);
     } catch (err) {
-      console.error('Error fetching opportunities:', err);
+      console.error('Error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
