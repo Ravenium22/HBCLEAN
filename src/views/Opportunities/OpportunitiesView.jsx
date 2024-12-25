@@ -1,7 +1,7 @@
 // src/views/Opportunities/OpportunitiesView.jsx
 import React, { useState, useEffect } from 'react';
 import NFTCard from '../../components/features/Opportunities/NFTCard.jsx';
-import OpenSeaService from '../../services/api/OpenSeaService.js';
+import api from '../lib/api';
 import { Loader2 } from 'lucide-react';
 
 function OpportunitiesView() {
@@ -18,13 +18,10 @@ function OpportunitiesView() {
     setError(null);
     
     try {
-      const service = new OpenSeaService();
-      const opportunities = await service.getListedOpportunities();
-      // Remove duplicates based on tokenId
-      const uniqueOpportunities = Array.from(
-        new Map(opportunities.map(item => [item.tokenId, item])).values()
-      );
-      setNfts(uniqueOpportunities);
+      // No need to create new OpenSeaService instance
+      // Just use the imported 'api' directly
+      const opportunities = await api.getListedOpportunities();
+      setNfts(opportunities);
     } catch (err) {
       console.error('Error fetching opportunities:', err);
       setError(err.message);
@@ -32,7 +29,7 @@ function OpportunitiesView() {
       setLoading(false);
     }
   };
-
+  
   // NFT Grid section
   const renderNFTGrid = () => {
     if (loading && !nfts.length) {
