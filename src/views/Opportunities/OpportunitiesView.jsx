@@ -1,7 +1,7 @@
 // src/views/Opportunities/OpportunitiesView.jsx
 import React, { useState, useEffect } from 'react';
 import NFTCard from '../../components/features/Opportunities/NFTCard.jsx';
-import OpenSeaService from '../../services/api/OpenSeaService.js';
+import { OpenSeaService } from '@/services/api';
 import { Loader2 } from 'lucide-react';
 
 function OpportunitiesView() {
