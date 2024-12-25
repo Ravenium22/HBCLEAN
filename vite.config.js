@@ -6,13 +6,15 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    extensions: ['.js', '.jsx', '.json'],
   },
   build: {
-    outDir: 'dist',
-    sourcemap: true,
+    commonjsOptions: {
+      include: [],
+    },
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
   },
   server: {
     proxy: {
