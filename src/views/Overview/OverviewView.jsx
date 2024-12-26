@@ -1,12 +1,14 @@
+// src/components/OverviewView.jsx
+
 import React from 'react';
 import { Tag, BarChart2, Users, Activity, ExternalLink } from 'lucide-react';
 import useOpenSea from '../../hooks/useOpenSea';
 
 const OverviewView = () => {
-  // 1) Grab loading/error/stats from our hook
+  // Grab loading/error/stats from our hook
   const { loading, error, stats } = useOpenSea('hungrybera');
 
-  // 2) Handle loading/error *before* referencing stats
+  // Handle loading/error *before* referencing stats
   if (loading) {
     return (
       <div className="p-6">
@@ -22,10 +24,10 @@ const OverviewView = () => {
     );
   }
 
-  // 3) Safely define totalStats
+  // Safely define totalStats
   const totalStats = stats || {};
 
-  // define your stat cards
+  // Define your stat cards
   const statCards = [
     {
       title: 'Floor Price',

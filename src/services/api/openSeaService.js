@@ -1,9 +1,10 @@
-// src/services/api/OpenSeaService.js
+// src/services/openseaService.js
+
 import nftData from '../../data/nft-data.json';
 
 class OpenSeaService {
   constructor() {
-    this.baseUrl = '/api/v2';
+    this.baseUrl = 'https://api.opensea.io/api/v2'; // Ensure full URL
     this.headers = {
       'X-API-KEY': import.meta.env.VITE_OPENSEA_API_KEY,
       'Accept': 'application/json'
@@ -18,10 +19,15 @@ class OpenSeaService {
       const url = `${this.baseUrl}/collections/${collectionSlug}/stats`;
       const response = await fetch(url, { headers: this.headers });
       
-      if (!response.ok) throw new Error(`Stats error: ${response.status}`);
+      if (!response.ok) throw new Error(`Stats error: ${response.status} ${response.statusText}`);
       
       const data = await response.json();
-      return {
+
+      // Log the raw API response
+      console.log('getCollectionStats API Response:', JSON.stringify(data, null, 2));
+
+      // Parse the statistics from the response
+      const parsedStats = {
         floor_price: Number(data?.total?.floor_price) || 0,
         volume: Number(data?.total?.volume) || 0,
         sales: Number(data?.total?.sales) || 0,
@@ -29,6 +35,11 @@ class OpenSeaService {
         average_price: Number(data?.total?.average_price) || 0,
         market_cap: Number(data?.total?.market_cap) || 0
       };
+
+      // Log the parsed statistics
+      console.log('Parsed Stats:', parsedStats);
+
+      return parsedStats;
     } catch (error) {
       console.error('Error fetching stats:', error);
       return {
@@ -43,9 +54,16 @@ class OpenSeaService {
   }
 
   getRarityPrice(rank, floor_price, volume) {
-    const basePrice = floor_price * 1.5; // Start at 1.5x floor
-    const rankMultiplier = Math.pow(0.99, rank); // Exponential decay based on rank
-    return basePrice * (1 + rankMultiplier);
+    // Define a base multiplier
+    const baseMultiplier = 1.5; // Start at 1.5x floor
+
+    // Exponential decay based on rank
+    const rankMultiplier = Math.pow(0.99, rank);
+
+    // Calculate expected price
+    const expectedPrice = floor_price * baseMultiplier * (1 + rankMultiplier);
+
+    return expectedPrice;
   }
 
   async getCollectionListings() {
@@ -60,15 +78,18 @@ class OpenSeaService {
           headers: this.headers
         });
 
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        if (!response.ok) throw new Error(`API error: ${response.status} ${response.statusText}`);
         
         const data = await response.json();
         allListings = [...allListings, ...(data?.listings || [])];
         next = data?.next;
 
+        console.log(`Fetched ${data.listings.length} listings, next cursor: ${next}`);
+
+        // Introduce a delay to respect rate limits
         await new Promise(resolve => setTimeout(resolve, 500));
       } while (next);
-
+      
       return allListings;
     } catch (error) {
       console.error('Error fetching listings:', error);
@@ -78,11 +99,10 @@ class OpenSeaService {
 
   parsePrice(listing) {
     try {
-      const consideration = listing.protocol_data?.parameters?.consideration;
-      if (!consideration?.length) return null;
-      const price = consideration[0]?.startAmount;
-      return price ? parseFloat(price) / 1e18 : null;
+      const priceStr = listing.price?.current?.value;
+      return priceStr ? parseFloat(priceStr) / 1e18 : null; // Convert wei to ETH
     } catch (error) {
+      console.error('Error parsing price:', error);
       return null;
     }
   }
@@ -111,23 +131,27 @@ class OpenSeaService {
         const currentPrice = this.parsePrice(listing);
         if (!currentPrice) continue;
   
-        const rarityPrice = this.getRarityPrice(
+        const expectedPrice = this.getRarityPrice(
           nftData.officialRank,
           Math.max(stats.floor_price, 0.01), // Avoid division by zero
           stats.volume
         );
   
-        const rarityPriceDiff = currentPrice - rarityPrice;
+        const rarityPriceDiff = currentPrice - expectedPrice;
         
-        // Improved bargain score calculation
-        const priceDiffPercentage = ((rarityPrice - currentPrice) / rarityPrice) * 100;
-        const floorPriceRatio = currentPrice / stats.floor_price;
+        // Calculate bargain score
+        const priceDiffPercentage = ((expectedPrice - currentPrice) / expectedPrice) * 100;
+        const rankBonus = (1000 - nftData.officialRank) / 10; // Max bonus ~100
         
-        // Weight both rarity and floor price in bargain score
-        const bargainScore = Math.min(100, Math.max(0, 
-          (((rarityPrice - currentPrice) / rarityPrice) * 100) + // Price difference %
-          ((1000 - nftData.officialRank) / 10) // Rank bonus (up to 100)
-        ));
+        const bargainScore = Math.min(100, Math.max(0, priceDiffPercentage + rankBonus));
+  
+        // Log the calculations for each opportunity
+        console.log(`Token ID: ${tokenId}`);
+        console.log(`Official Rank: ${nftData.officialRank}`);
+        console.log(`Current Price: ${currentPrice} ETH`);
+        console.log(`Expected Price: ${expectedPrice.toFixed(3)} ETH`);
+        console.log(`Price Difference: ${rarityPriceDiff.toFixed(3)} ETH`);
+        console.log(`Bargain Score: ${bargainScore.toFixed(2)}`);
   
         opportunities.push({
           tokenId,
@@ -135,7 +159,7 @@ class OpenSeaService {
           officialRank: nftData.officialRank,
           rarityScore: nftData.rarityScore,
           currentPrice,
-          rarityPrice,
+          expectedPrice,
           rarityPriceDiff,
           bargainScore,
           floorPrice: stats.floor_price

@@ -1,4 +1,5 @@
 // src/views/Opportunities/OpportunitiesView.jsx
+
 import React, { useState, useEffect } from 'react';
 import NFTCard from '../../components/features/Opportunities/NFTCard';
 import { Loader2 } from 'lucide-react';
@@ -19,6 +20,7 @@ function OpportunitiesView() {
     
     try {
       const opportunities = await getListedOpportunities();
+      console.log('Fetched Opportunities:', opportunities); // Log fetched opportunities
       setNfts(opportunities);
     } catch (err) {
       console.error('Error:', err);
@@ -57,6 +59,7 @@ function OpportunitiesView() {
             rarityScore={nft.rarityScore}
             currentPrice={nft.currentPrice}
             rarityPriceDiff={nft.rarityPriceDiff}
+            bargainScore={nft.bargainScore} // Pass bargainScore
           />
         ))}
       </div>

@@ -1,5 +1,7 @@
+// src/hooks/useOpenSea.js
+
 import { useState, useEffect } from 'react';
-import { getCollectionStats } from '../services/opensea';
+import OpenSeaService from '../services/api/OpenSeaService'; // Adjust the path as necessary
 
 const useOpenSea = (collectionSlug) => {
   const [loading, setLoading] = useState(true);
@@ -15,14 +17,17 @@ const useOpenSea = (collectionSlug) => {
 
   useEffect(() => {
     const fetchStats = async () => {
+      const openSeaService = new OpenSeaService(); // Instantiate the service
       try {
         setLoading(true);
         setError(null);
-        const fetched = await getCollectionStats(collectionSlug);
+        console.log(`useOpenSea: Fetching stats for ${collectionSlug}`);
+        const fetched = await openSeaService.getCollectionStats(collectionSlug);
+        console.log('useOpenSea: Fetched stats:', fetched);
         setStats(fetched);
       } catch (err) {
-        console.error('Error:', err);
-        setError(err.message);
+        console.error('useOpenSea: Error:', err);
+        setError(err.message || 'Failed to fetch collection statistics.');
       } finally {
         setLoading(false);
       }

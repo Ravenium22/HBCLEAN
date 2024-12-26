@@ -1,4 +1,5 @@
 // src/components/features/Opportunities/NFTCard.jsx
+
 import React from 'react';
 import { ExternalLink, Trophy, TrendingUp, TrendingDown, Star } from 'lucide-react';
 
