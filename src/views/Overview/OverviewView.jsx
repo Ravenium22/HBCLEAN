@@ -52,6 +52,22 @@ function OverviewView() {
     }
   ];
 
+  // Define your quick links with names and URLs
+  const quickLinks = [
+    {
+      name: 'Discord',
+      url: 'https://discord.gg/ramenfinance'
+    },
+    {
+      name: 'X',
+      url: 'https://x.com/ramen_finance'
+    },
+    {
+      name: 'Website',
+      url: 'https://ramen.finance/'
+    }
+  ];
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -93,8 +109,9 @@ function OverviewView() {
         ))}
       </div>
 
-      {/* About, etc. */}
+      {/* About and Quick Links */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* About Section */}
         <div className="lg:col-span-2 bg-secondary rounded-lg p-6">
           <h2 className="font-display text-2xl text-accent mb-4">ABOUT HUNGRYBERA</h2>
           <p className="font-sans text-dark">
@@ -103,16 +120,20 @@ function OverviewView() {
             as a notable project in the NFT space, living on Arbitrum.
           </p>
         </div>
+
+        {/* Quick Links Section */}
         <div className="bg-secondary rounded-lg p-6">
           <h2 className="font-display text-2xl text-accent mb-4">QUICK LINKS</h2>
           <div className="space-y-3">
-            {['Discord', 'Twitter', 'Website'].map((link) => (
+            {quickLinks.map((link) => (
               <a
-                key={link}
-                href="#"
+                key={link.name}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-dark rounded-lg text-secondary hover:bg-dark/80 transition-all"
               >
-                <span className="font-sans">{link}</span>
+                <span className="font-sans">{link.name}</span>
                 <ExternalLink className="h-4 w-4" />
               </a>
             ))}
