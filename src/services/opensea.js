@@ -4,7 +4,7 @@ import nftDataJSON from '../data/Top1000.json';
 
 const CHAIN = 'arbitrum';
 const CONTRACT = '0xaC59F7E7e5da0dC4f416A7aEfF7a49aC284f10Ca';
-const BASE_URL = 'https://api.opensea.io/api/v2'; // Adjust if using a proxy
+const BASE_URL = 'https://api.opensea.io/api/v2';
 
 const headers = {
   'X-API-KEY': import.meta.env.VITE_OPENSEA_API_KEY,
@@ -78,9 +78,26 @@ export const getCollectionListings = async () => {
   }
 };
 
-export const parsePrice = (listing) => {
+export const getCollectionOffers = async (collectionSlug = 'hungrybera') => {
   try {
-    const priceStr = listing.price?.current?.value;
+    const url = `${BASE_URL}/offers/collection/${collectionSlug}`;
+    const response = await fetch(url, { headers });
+
+    if (!response.ok) throw new Error(`Offers error: ${response.status} ${response.statusText}`);
+    
+    const data = await response.json();
+    console.log('getCollectionOffers API Response:', JSON.stringify(data, null, 2));
+    
+    return data.offers || [];
+  } catch (error) {
+    console.error('Error fetching collection offers:', error);
+    return [];
+  }
+};
+
+export const parsePrice = (priceObj) => {
+  try {
+    const priceStr = priceObj?.value;
     return priceStr ? parseFloat(priceStr) / 1e18 : null; // Convert wei to ETH
   } catch (error) {
     console.error('Error parsing price:', error);
@@ -116,7 +133,7 @@ export const getListedOpportunities = async () => {
       const nftData = nftDataJSON.nfts.find(n => n.tokenId === tokenId);
       if (!nftData || nftData.officialRank > 1000) continue;
 
-      const currentPrice = parsePrice(listing);
+      const currentPrice = parsePrice(listing.price?.current);
       if (!currentPrice) continue;
 
       const expectedPrice = getRarityPrice(
@@ -162,29 +179,38 @@ export const getListedOpportunities = async () => {
   }
 };
 
-// New function to get the best offer on floor price NFTs
+// New function to get the best offer on collection
 export const getPriceGap = async (collectionSlug = 'hungrybera') => {
   try {
     const stats = await getCollectionStats(collectionSlug);
     const floorPrice = stats.floor_price;
 
-    const listings = await getCollectionListings();
-    const floorListings = listings.filter(listing => parsePrice(listing) === floorPrice);
+    const offers = await getCollectionOffers(collectionSlug);
+    
+    // Map to store highest offer per token
+    const bestOffers = {};
 
-    let bestOffer = 0;
-
-    for (const listing of floorListings) {
-      const offers = listing.offers || [];
-      for (const offer of offers) {
-        const offerPrice = parsePrice(offer);
-        if (offerPrice && offerPrice > bestOffer) {
-          bestOffer = offerPrice;
+    offers.forEach(offer => {
+      const tokenId = offer.protocol_data?.parameters?.offer?.[0]?.identifierOrCriteria;
+      const offerPrice = parsePrice(offer.price);
+      
+      if (tokenId && offerPrice) {
+        if (!bestOffers[tokenId] || offerPrice > bestOffers[tokenId]) {
+          bestOffers[tokenId] = offerPrice;
         }
       }
-    }
+    });
 
-    const priceGap = bestOffer - floorPrice;
-    return priceGap;
+    // Calculate price gaps
+    const priceGaps = Object.values(bestOffers).map(offerPrice => offerPrice - floorPrice);
+
+    // Calculate average price gap
+    const totalGap = priceGaps.reduce((acc, gap) => acc + gap, 0);
+    const averageGap = priceGaps.length ? totalGap / priceGaps.length : 0;
+
+    console.log(`Average Price Gap: ${averageGap.toFixed(3)} ETH`);
+
+    return averageGap;
   } catch (error) {
     console.error('Error fetching price gap:', error);
     return 0;
