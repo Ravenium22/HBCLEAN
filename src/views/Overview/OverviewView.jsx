@@ -1,53 +1,54 @@
-// src/components/OverviewView.jsx
+// src/views/Overview/OverviewView.jsx
 
 import React from 'react';
-import { Tag, BarChart2, Users, Activity, ExternalLink } from 'lucide-react';
-import useOpenSea from '../../hooks/useOpenSea';
+import { Tag, BarChart2, Users, Activity, TrendingUp, TrendingDown, ExternalLink } from 'lucide-react';
+import useOverview from '../../hooks/useOverview';
 
-const OverviewView = () => {
-  // Grab loading/error/stats from our hook
-  const { loading, error, stats } = useOpenSea('hungrybera');
+function OverviewView() {
+  const { loading, error, stats, priceGap } = useOverview('hungrybera');
 
-  // Handle loading/error *before* referencing stats
   if (loading) {
     return (
       <div className="p-6">
-        <p className="text-secondary/60">Loading collection stats...</p>
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="p-6">
-        <p className="text-red-500">Error: {error}</p>
+        <p className="text-secondary/60">Loading overview...</p>
       </div>
     );
   }
 
-  // Safely define totalStats
-  const totalStats = stats || {};
+  if (error) {
+    return (
+      <div className="p-6">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   // Define your stat cards
   const statCards = [
     {
       title: 'Floor Price',
-      value: `${totalStats.floor_price?.toFixed(3) || '0'} ETH`,
+      value: `${stats.floor_price.toFixed(3)} ETH`,
       icon: Tag
     },
     {
       title: '24h Volume',
-      value: `${totalStats.volume?.toFixed(2) || '0'} ETH`,
+      value: `${stats.volume.toFixed(2)} ETH`,
       icon: BarChart2
     },
     {
       title: 'Owners',
-      value: totalStats.num_owners?.toLocaleString() || '0',
+      value: stats.num_owners.toLocaleString(),
       icon: Users
     },
     {
       title: 'Total Sales',
-      value: totalStats.sales?.toLocaleString() || '0',
+      value: stats.sales.toLocaleString(),
       icon: Activity
+    },
+    {
+      title: 'Price Gap (Best Offer - Floor Price)',
+      value: `${priceGap.toFixed(3)} ETH`,
+      icon: priceGap >= 0 ? TrendingUp : TrendingDown
     }
   ];
 
@@ -76,7 +77,7 @@ const OverviewView = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {statCards.map((stat, index) => (
           <div key={index} className="bg-secondary rounded-lg p-4">
             <div className="flex items-start justify-between">
@@ -120,6 +121,6 @@ const OverviewView = () => {
       </div>
     </div>
   );
-};
+}
 
 export default OverviewView;

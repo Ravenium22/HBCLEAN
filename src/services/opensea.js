@@ -4,7 +4,7 @@ import nftDataJSON from '../data/Top1000.json';
 
 const CHAIN = 'arbitrum';
 const CONTRACT = '0xaC59F7E7e5da0dC4f416A7aEfF7a49aC284f10Ca';
-const BASE_URL = 'https://api.opensea.io/api/v2'; // Adjust if using proxy
+const BASE_URL = 'https://api.opensea.io/api/v2'; // Adjust if using a proxy
 
 const headers = {
   'X-API-KEY': import.meta.env.VITE_OPENSEA_API_KEY,
